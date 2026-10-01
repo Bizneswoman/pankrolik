@@ -181,3 +181,32 @@ agent_communication:
     -message: "Please test all backend API endpoints. Base URL is the public origin + /api. Admin password is 'pankrolik2025' (sent via header x-admin-token for mutations, and in body {password} for /api/admin/login). Verify: (1) GET endpoints return seeded data, (2) login success/failure, (3) mutations succeed WITH token and are rejected 401 WITHOUT token, (4) create then delete a menu item / gallery / review round trip. Do NOT worry about UI."
     -agent: "testing"
     -message: "✅ Backend testing complete - ALL TESTS PASSED (10/10). All GET endpoints return correct data with UUIDs and no _id leaks. Admin login works correctly with success/failure cases. All mutations properly require authentication (401 without token). All CRUD operations (menu, gallery, reviews, content) work correctly with token. No critical issues found. Backend API is fully functional and ready for production."
+
+backend:
+  - task: "Empty-DB self-heal: auto-seed on SSR (lib/data.js + shared lib/seed.js)"
+    implemented: true
+    working: true
+    file: "/app/lib/data.js, /app/lib/seed.js, /app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User reported client-side exception on deployed site because new Atlas DB was empty. Root cause: lib/data.js (SSR) fetched from DB without seeding, returning content:null which crashed site-client. Fix: extracted seed data (DEFAULT_CONTENT, mkMenu, mkGallery, mkReviews, ensureSeed) from route.js into shared /app/lib/seed.js; route.js now imports ensureSeed from there (no behavior change intended); lib/data.js now calls ensureSeed(db) before fetching AND falls back to in-memory defaults if DB is unreachable/empty. Manually verified: dropped local DB, homepage returned 200 and DB re-seeded (content:1, menu:30, gallery:20, reviews:3). Also created standalone /app/scripts/seed-atlas.mjs (Atlas seeding blocked by Atlas IP allowlist - user action needed, not testable here)."
+      - working: true
+        agent: "testing"
+        comment: "✅ ALL TESTS PASSED (12/12). REGRESSION TESTS (10/10): All API endpoints work correctly after refactor - GET /api/content returns correct structure with id='site' and no _id; GET /api/menu returns 30 items with UUIDs; GET /api/gallery returns 20 items with UUIDs; GET /api/reviews returns 3 items with UUIDs; Admin login works with correct/wrong password; Auth required on mutations (401 without token); All CRUD operations (menu, gallery, reviews, content) work with token. CRITICAL EMPTY-DB SELF-HEAL TESTS (2/2): Empty-DB Homepage Recovery - dropped DB, GET / returned 200 with real content ('Pan Królik' text present, no error page), collections auto re-seeded (content:1, menu:30, gallery:20, reviews:3); Empty-DB API Recovery - dropped DB, GET /api/menu returned 30 items, collections auto re-seeded. The bug fix is working perfectly - both SSR (lib/data.js) and API routes (route.js) correctly call ensureSeed() from shared /app/lib/seed.js, preventing empty-DB crashes."
+
+test_plan:
+  current_focus:
+    - "Empty-DB self-heal: auto-seed on SSR (lib/data.js + shared lib/seed.js)"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Refactored seed logic into /app/lib/seed.js shared by API route and SSR data layer. Please test: (1) all API endpoints still work (GET/PUT /api/content, CRUD /api/menu, /api/gallery, /api/reviews, POST /api/admin/login with password pankrolik2025), (2) empty-DB recovery: drop the local DB (mongosh: db.getSiblingDB(process DB_NAME from /app/.env = your_database_name).dropDatabase()), then GET homepage (http://localhost:3000/) must return 200 with full content (not an error page) and collections must be re-seeded automatically, (3) same empty-DB recovery via API: drop DB then GET /api/menu must return 30 items. Do NOT test the Atlas script (external network blocked)."
+  - agent: "testing"
+    message: "✅ Backend testing complete - ALL TESTS PASSED (12/12). REGRESSION: All 10 API endpoints work correctly after refactor (GET endpoints, admin login, auth protection, all CRUD operations). CRITICAL BUG FIX VERIFIED: Empty-DB self-heal works perfectly via both SSR homepage and API routes. Dropped DB twice and verified: (1) Homepage returns 200 with real content (no crash/error page), (2) API endpoints return correct data (30 menu, 20 gallery, 3 reviews), (3) Collections auto re-seed correctly. The refactor to shared /app/lib/seed.js is successful - both route.js and lib/data.js correctly call ensureSeed(). No critical issues found. Backend is fully functional and the reported bug is fixed."
