@@ -135,7 +135,6 @@ export default function Admin() {
           <button type="submit" className="w-full bg-gradient-to-b from-gold-light to-gold text-forest-dark font-medium rounded-full py-2.5 hover:shadow-lg transition-all">
             Zaloguj się
           </button>
-          <p className="text-cream/30 text-xs mt-4">Domyślne hasło: pankrolik2025</p>
         </form>
       </div>
     )
