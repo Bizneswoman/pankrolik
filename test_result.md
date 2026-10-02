@@ -339,3 +339,31 @@ agent_communication:
     message: "Re-verify About section on http://localhost:3000 (#o-nas): (1) ONLY the photo img[alt='Restauracja Pan Królik'] renders - there must be NO decorative border/frame element offset behind/around it (previously a div with translate-x-4 translate-y-4 border-gold classes - verify it no longer exists in DOM), (2) photo is a straight portrait (aspect ~3:4) with rounded corners, no visual misalignment, (3) desktop 1920x800 + mobile 390x844, no horizontal overflow, (4) smoke: hero loads, about text paragraphs visible after scroll."
   - agent: "testing"
     message: "✅ Bug fix verification COMPLETE - ALL TESTS PASSED. The decorative gold border div has been successfully removed from the about section. DOM inspection confirms only the IMG element exists in the container (no border div siblings). Photo renders perfectly as a 3:4 portrait card (aspect ratio 0.750) on both desktop and mobile with no horizontal overflow. All smoke tests passed (hero logo, about text, section title). No console errors. The photo now displays as a clean, straight portrait card with rounded corners and no visual misalignment. Ready for production."
+
+backend:
+  - task: "Migration v4: owner's 5 real gallery photos (/public/gallery/g1-g5.jpg) inserted in order"
+    implemented: true
+    working: true
+    file: "/app/lib/seed.js, /app/public/gallery/*"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User sent 5 gallery photos. Processed: optimized to JPEG max 1600px, fixed rotation of g3 (was sideways), excluded accidental screenshot upload. Added migration v4 inserting 5 gallery docs {id(uuid), url:/gallery/gN.jpg, order 0-4}. Verified locally: GET /api/gallery returns 5 in order, meta.version=4. Note: v3 block was accidentally removed and restored during edit - verify v2->v3->v4 chain on fresh DB."
+      - working: true
+        agent: "testing"
+        comment: "✅ ALL TESTS PASSED (5/5). Test 1 - Gallery 5 Items: GET /api/gallery returns exactly 5 items with URLs /gallery/g1.jpg through /gallery/g5.jpg, orders 0-4 ascending, tested 4 times with no duplication. Test 2 - Static Files: All gallery images (g1.jpg-g5.jpg) return 200 with image/jpeg content-type (sizes: 343KB, 288KB, 328KB, 269KB, 239KB), about.jpg returns 200 image/jpeg (303KB), logo-transparent.png returns 200 image/png (455KB). Test 3 - CRITICAL Fresh DB Migration Chain: Dropped DB, GET /api/content once triggered complete migration chain v2->v3->v4 correctly - meta.version=4, v2 migration applied (contact.address='Aleja Rzeczypospolitej 2a, 02-972 Warszawa', contact.phone='+48 787 147 007'), v3 migration applied (about.image='/about.jpg'), v4 migration applied (gallery has exactly 5 items g1-g5 with orders 0-4), menu empty (v2 cleared demo data), reviews=3 items. Test 4 - Gallery CRUD: POST /api/gallery with x-admin-token created new item with order 5 (6th item), item persisted across 3 repeated GETs (migration does NOT wipe or duplicate), DELETE removed item successfully, gallery back to 5 items. Test 5 - Homepage: GET / returns 200 with 'Pan Królik' content. Migration v4 is working perfectly - the 5 real gallery photos are correctly inserted with proper order, migration chain v2->v3->v4 executes correctly on fresh DB, and CRUD operations work without interference from migrations."
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Test migration v4: (1) GET /api/gallery returns exactly 5 items ordered 0-4 with urls /gallery/g1.jpg.../gallery/g5.jpg; repeated calls do NOT duplicate items. (2) Static files GET http://localhost:3000/gallery/g1.jpg ... g5.jpg all return 200 image/jpeg. (3) CRITICAL fresh-DB chain: drop DB (mongosh db.getSiblingDB('your_database_name').dropDatabase()), GET /api/content once, then verify: meta.version=4, gallery has exactly 5 items (g1-g5, orders 0-4), about.image='/about.jpg', contact.address='Aleja Rzeczypospolitej 2a, 02-972 Warszawa', menu empty, reviews 3. (4) Gallery POST (x-admin-token pankrolik2025) adds a 6th item with order 5, persists across GETs, then DELETE it. (5) Homepage GET / returns 200."
+  - agent: "testing"
+    message: "✅ Backend testing complete - ALL TESTS PASSED (5/5). Migration v4 is working perfectly. CRITICAL TESTS VERIFIED: (1) Gallery API returns exactly 5 items (g1-g5.jpg) with orders 0-4, no duplication across 4 calls, (2) All static files accessible (g1-g5.jpg, about.jpg, logo.png) with correct content-types, (3) CRITICAL: Fresh DB migration chain v2->v3->v4 works correctly - dropped DB, single GET /api/content triggered all migrations, meta.version=4, v2 applied (contact data, menu/gallery cleared), v3 applied (about.image='/about.jpg'), v4 applied (5 gallery photos inserted with orders 0-4), (4) Gallery CRUD works - POST creates item with order 5, persists across GETs (migration doesn't wipe), DELETE works, (5) Homepage returns 200. No critical issues found. The 5 real gallery photos are correctly integrated and the complete migration chain is production-ready."
