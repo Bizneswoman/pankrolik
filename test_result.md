@@ -317,3 +317,25 @@ agent_communication:
     message: "Please verify the About section photo fix on http://localhost:3000 (scroll to #o-nas): (1) the about image (src=/about.jpg) renders as a PORTRAIT frame (taller than wide, aspect ratio ~3:4), shows the restaurant interior (green wall, tables, golden floor) largely uncropped - ceiling plants at top AND golden floor at bottom must both be visible, (2) decorative gold offset border behind the photo aligns with the image, (3) check at desktop 1920x800 AND mobile 390x844 - no horizontal overflow, image not distorted/stretched, (4) quick regression: hero renders with transparent logo (no dark square), menu section shows 'Nowe menu już wkrótce.', gallery shows 'Galeria już wkrótce.', contact section shows address 'Aleja Rzeczypospolitej 2a' and hours with 'Zamknięte' for Monday."
   - agent: "testing"
     message: "✅ About section photo fix VERIFIED - ALL TESTS PASSED. The fix is working perfectly: (1) About image renders as PORTRAIT with exact 3:4 aspect ratio (0.750) on both desktop and mobile, showing full restaurant interior (plants at top, golden floor at bottom - NOT cropped), (2) Gold border aligns correctly, (3) Desktop 1920x800 and mobile 390x844 both work perfectly - no horizontal overflow, no distortion, (4) All regression tests pass - hero logo, menu/gallery empty states, contact info all correct. Only minor WebSocket HMR warnings (infrastructure, not functional bugs). The change from h-[500px] to aspect-[3/4] successfully fixed the cropping issue. Ready for production."
+
+frontend:
+  - task: "Remove misaligned decorative offset border behind about photo (looked crooked)"
+    implemented: true
+    working: true
+    file: "/app/app/site-client.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User reported photo still looks 'krzywo' with screenshot - the actual culprit was the decorative gold border div (absolute -inset-3 translate-x-4 translate-y-4) shifted down-right behind the image, creating a crooked impression. Removed the div entirely. Photo now renders as a clean straight portrait card. No other offset borders in the codebase (grep confirmed 0)."
+      - working: true
+        agent: "testing"
+        comment: "✅ BUG FIX VERIFIED - ALL TESTS PASSED (4/4 test groups). CRITICAL FIX CONFIRMED: (1) DOM inspection verified NO decorative border div exists - parent container has only 1 child (the IMG element), no sibling div with border-gold/translate-x-4/translate-y-4/-inset-3 classes found anywhere. (2) Photo renders perfectly as straight portrait card: Desktop 640×853px with aspect ratio 0.750 (exactly 3:4 portrait), Mobile 326×435px with aspect ratio 0.750, both confirm height > width. Image has correct classes: w-full aspect-[3/4] object-cover rounded-2xl shadow-2xl. (3) No horizontal overflow: Desktop 1920x800 (document width = viewport width = 1920px), Mobile 390x844 (document width = viewport width = 390px). (4) All smoke tests passed: Hero section renders with transparent logo (/logo-transparent.png), about section has title 'O restauracji', about text contains 'Pan Królik to restauracja...' paragraphs. (5) No console errors detected. Screenshots confirm clean portrait rendering with rounded corners and no offset border on both desktop and mobile. The decorative gold border div has been successfully removed and the photo now displays as a clean, straight portrait card with no visual misalignment."
+
+agent_communication:
+  - agent: "main"
+    message: "Re-verify About section on http://localhost:3000 (#o-nas): (1) ONLY the photo img[alt='Restauracja Pan Królik'] renders - there must be NO decorative border/frame element offset behind/around it (previously a div with translate-x-4 translate-y-4 border-gold classes - verify it no longer exists in DOM), (2) photo is a straight portrait (aspect ~3:4) with rounded corners, no visual misalignment, (3) desktop 1920x800 + mobile 390x844, no horizontal overflow, (4) smoke: hero loads, about text paragraphs visible after scroll."
+  - agent: "testing"
+    message: "✅ Bug fix verification COMPLETE - ALL TESTS PASSED. The decorative gold border div has been successfully removed from the about section. DOM inspection confirms only the IMG element exists in the container (no border div siblings). Photo renders perfectly as a 3:4 portrait card (aspect ratio 0.750) on both desktop and mobile with no horizontal overflow. All smoke tests passed (hero logo, about text, section title). No console errors. The photo now displays as a clean, straight portrait card with rounded corners and no visual misalignment. Ready for production."

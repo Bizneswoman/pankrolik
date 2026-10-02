@@ -324,7 +324,6 @@ export default function SiteClient({ initial }) {
             <FadeIn className="relative" y={40}>
               <div className="relative">
                 <img src={content.about.image} alt="Restauracja Pan Królik" className="w-full aspect-[3/4] object-cover rounded-2xl shadow-2xl" />
-                <div className="absolute -inset-3 border border-gold/30 rounded-2xl -z-0 translate-x-4 translate-y-4" />
               </div>
             </FadeIn>
 
