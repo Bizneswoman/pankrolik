@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { Lock, Save, Plus, Trash2, Image as ImageIcon, LogOut, Utensils, MessageSquare, Settings, LayoutGrid } from 'lucide-react'
+import { LOGO_BASE64 } from '@/lib/logo-image'
 
-const LOGO = '/logo-transparent.png'
+const LOGO = LOGO_BASE64
 const CATEGORIES = ['Przystawki', 'Zupy', 'Dania główne', 'Pizza', 'Burgery', 'Makarony', 'Desery', 'Napoje']
 
 const inputCls = 'w-full bg-forest-dark border border-gold/25 rounded-lg px-3 py-2 text-cream text-sm focus:outline-none focus:border-gold transition-colors'

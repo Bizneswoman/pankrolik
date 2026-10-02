@@ -7,8 +7,9 @@ import {
   Leaf, Sparkles, ConciergeBell, Star, Navigation, CalendarCheck, UtensilsCrossed,
   ChevronLeft, ChevronRight, Quote
 } from 'lucide-react'
+import { LOGO_BASE64 } from '@/lib/logo-image'
 
-const LOGO = '/logo-transparent.png'
+const LOGO = LOGO_BASE64
 
 const ICONS = { Leaf, MapPin, Sparkles, ConciergeBell }
 
