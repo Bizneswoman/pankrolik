@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Lock, Save, Plus, Trash2, Image as ImageIcon, LogOut, Utensils, MessageSquare, Settings, LayoutGrid } from 'lucide-react'
 
-const LOGO = 'https://customer-assets.emergentagent.com/job_elegant-rabbit/artifacts/x9lrj07c_D9632737-1F44-45B4-A7C0-9C441DE67080.PNG'
+const LOGO = '/logo-transparent.png'
 const CATEGORIES = ['Przystawki', 'Zupy', 'Dania główne', 'Pizza', 'Burgery', 'Makarony', 'Desery', 'Napoje']
 
 const inputCls = 'w-full bg-forest-dark border border-gold/25 rounded-lg px-3 py-2 text-cream text-sm focus:outline-none focus:border-gold transition-colors'
@@ -261,10 +261,11 @@ export default function Admin() {
               <label className={labelCls + ' mt-4'}>Godziny otwarcia (dzień PL / dzień EN / godziny)</label>
               <div className="space-y-2">
                 {content.contact.hours.map((h, i) => (
-                  <div key={i} className="grid grid-cols-3 gap-3">
+                  <div key={i} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <input className={inputCls} value={h.day} onChange={(e) => setC(['contact', 'hours', i, 'day'], e.target.value)} placeholder="Dzień PL" />
                     <input className={inputCls} value={h.day_en || ''} onChange={(e) => setC(['contact', 'hours', i, 'day_en'], e.target.value)} placeholder="Day EN" />
-                    <input className={inputCls} value={h.time} onChange={(e) => setC(['contact', 'hours', i, 'time'], e.target.value)} placeholder="Godziny" />
+                    <input className={inputCls} value={h.time} onChange={(e) => setC(['contact', 'hours', i, 'time'], e.target.value)} placeholder="Godziny PL" />
+                    <input className={inputCls} value={h.time_en || ''} onChange={(e) => setC(['contact', 'hours', i, 'time_en'], e.target.value)} placeholder="Hours EN (opcjonalnie)" />
                   </div>
                 ))}
               </div>

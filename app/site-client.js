@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronRight, Quote
 } from 'lucide-react'
 
-const LOGO = 'https://customer-assets.emergentagent.com/job_elegant-rabbit/artifacts/x9lrj07c_D9632737-1F44-45B4-A7C0-9C441DE67080.PNG'
+const LOGO = '/logo-transparent.png'
 
 const ICONS = { Leaf, MapPin, Sparkles, ConciergeBell }
 
@@ -41,6 +41,7 @@ const T = {
     viewMenu: 'Zobacz menu',
     aboutOverline: 'Nasza historia',
     menuOverline: 'Kulinarna sztuka', menuTitle: 'Nasze Menu',
+    menuEmpty: 'Nowe menu już wkrótce.', galleryEmpty: 'Galeria już wkrótce.',
     galleryOverline: 'Galeria', galleryTitle: 'Nasze wnętrze i dania', view: 'Zobacz',
     reviewsOverline: 'Referencje', reviewsTitle: 'Opinie naszych gości', moreReviews: 'Zobacz więcej opinii Google',
     findUsOverline: 'Znajdź nas', locationTitle: 'Lokalizacja',
@@ -59,6 +60,7 @@ const T = {
     viewMenu: 'View menu',
     aboutOverline: 'Our story',
     menuOverline: 'Culinary art', menuTitle: 'Our Menu',
+    menuEmpty: 'New menu coming soon.', galleryEmpty: 'Gallery coming soon.',
     galleryOverline: 'Gallery', galleryTitle: 'Our interior & dishes', view: 'View',
     reviewsOverline: 'Testimonials', reviewsTitle: 'What our guests say', moreReviews: 'See more Google reviews',
     findUsOverline: 'Find us', locationTitle: 'Location',
@@ -277,7 +279,7 @@ export default function SiteClient({ initial }) {
               transition={{ duration: 1, ease: 'easeOut' }}
               className="flex justify-center lg:justify-start"
             >
-              <img src={LOGO} alt="Pan Królik" className="w-64 md:w-80 lg:w-[26rem] object-contain drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]" />
+              <img src={LOGO} alt="Pan Królik" className="w-64 md:w-80 lg:w-[26rem] object-contain" />
             </motion.div>
 
             <div className="text-center lg:text-left">
@@ -381,6 +383,9 @@ export default function SiteClient({ initial }) {
           </FadeIn>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            {menu.length === 0 && (
+              <p className="sm:col-span-2 lg:col-span-3 text-center text-cream/60 font-light py-10 text-lg">{t.menuEmpty}</p>
+            )}
             <AnimatePresence mode="popLayout">
               {shownItems.map((item, i) => (
                 <motion.div
@@ -419,6 +424,9 @@ export default function SiteClient({ initial }) {
       <section id="galeria" className="py-28 bg-forest">
         <div className="container">
           <SectionTitle overline={t.galleryOverline} title={t.galleryTitle} />
+          {gallery.length === 0 && (
+            <p className="text-center text-cream/60 font-light py-10 text-lg">{t.galleryEmpty}</p>
+          )}
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
             {gallery.map((g, i) => (
               <FadeIn key={g.id} delay={(i % 4) * 0.06} className="mb-4 break-inside-avoid">
@@ -557,7 +565,7 @@ export default function SiteClient({ initial }) {
                     <ul className="space-y-1">
                       {content.contact.hours.map((h, i) => (
                         <li key={i} className="flex justify-between gap-6 text-cream/85 text-sm">
-                          <span>{pick(h, 'day')}</span><span className="text-cream/60">{h.time}</span>
+                          <span>{pick(h, 'day')}</span><span className="text-cream/60">{pick(h, 'time')}</span>
                         </li>
                       ))}
                     </ul>
