@@ -238,3 +238,31 @@ agent_communication:
     message: "Fixed mojibake (raw unicode escapes) in admin panel UI. Please run frontend UI test on http://localhost:3000/admin: (1) login page shows proper Polish ('Hasło', 'Zaloguj się'), (2) login with password pankrolik2025 succeeds and dashboard appears, (3) all 4 tabs (Treść strony, Menu, Galeria, Opinie) open and show correct Polish diacritics (no literal \\u sequences anywhere), (4) basic CRUD smoke: edit a content field and save (toast appears), add+delete a menu item, add+delete a review. (5) Also verify homepage http://localhost:3000/ still renders correctly (PL and EN toggle). Credentials in /app/memory/test_credentials.md."
   - agent: "testing"
     message: "✅ UNICODE BUG FIX VERIFIED - ALL TESTS PASSED. Tested admin panel at http://localhost:3000/admin with comprehensive test suite covering all requested scenarios. CRITICAL FIX CONFIRMED: Zero literal \\uXXXX unicode escape sequences found anywhere in the UI (tested login page, all 4 dashboard tabs, and public homepage). All Polish diacritics render correctly (ł, ą, ę, ć, ń, ó, ś, ź, ż). FUNCTIONALITY VERIFIED: Login/logout works, wrong password shows error, all 4 tabs render correctly, content edit saves with toast, menu add/delete works, review add/delete works, homepage PL/EN toggle works. The fix successfully decoded all 314 unicode escapes to proper UTF-8 characters. Admin panel is fully functional and ready for production. No critical issues found."
+
+backend:
+  - task: "Login resilient to DB outage: /api/admin/login handled before DB connect + better error messages in admin UI"
+    implemented: true
+    working: true
+    file: "/app/app/api/[[...path]]/route.js, /app/app/admin/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User reported 'wyskakuje błędne hasło' on production login. Local login verified fine, so root cause hypothesis: in production the DB is unreachable -> route handler ran connectToMongo+ensureSeed BEFORE login -> login returned 500 -> admin UI displayed generic 'Nieprawidłowe hasło'. Fix 1: moved /admin/login handling BEFORE DB connect in route.js (login now DB-independent). Fix 2: admin login UI now distinguishes 401 (wrong password) vs server/network errors with clear Polish messages. Manually verified: with mongodb stopped, POST /api/admin/login returns 200 success; wrong password returns 401; after mongo restart, /api/menu returns 200. Deployer debug of production env is running in parallel."
+      - working: true
+        agent: "testing"
+        comment: "✅ ALL TESTS PASSED (3/3 test groups). CRITICAL BUG FIX VERIFIED: Login is now completely DB-independent and works perfectly during MongoDB outage. Test 1 - Normal Login (DB Running): Correct password returns 200 {success:true, token:'pankrolik2025'}, wrong password returns 401 {success:false, error}. Test 2 - CRITICAL DB Outage Resilience: Stopped MongoDB service, then verified login with correct password returns 200 {success:true, token} (CORE FIX WORKING!), wrong password returns 401, GET /api/menu times out during outage (expected behavior). Test 3 - Post-Outage Regression: Started MongoDB service, verified all endpoints work correctly - GET /api/menu returns 30 items, GET /api/content returns site content with id='site', GET /api/gallery returns 20 items, GET /api/reviews returns 3 items, menu CRUD with x-admin-token works (create/update/delete), protected routes without token return 401, homepage GET / returns 200 with real content ('Pan Królik' present). The refactor successfully moved /admin/login handling to lines 50-57 BEFORE connectToMongo() call (line 59), making login completely resilient to DB outages. This fixes the production issue where DB unreachability caused login to fail. MongoDB service confirmed running after tests."
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Please retest backend after login refactor: (1) POST /api/admin/login with pankrolik2025 -> 200 {success:true,token}; wrong password -> 401 {success:false}. (2) CRITICAL: stop mongodb (sudo supervisorctl stop mongodb), then POST /api/admin/login with correct password MUST still return 200 success; also GET /api/menu during outage should return 500 (expected). Then START mongodb back (sudo supervisorctl start mongodb) and verify GET /api/menu returns 30 items and full CRUD still works (menu add/update/delete with x-admin-token: pankrolik2025). (3) Regression: GET /api/content, /api/gallery, /api/reviews OK; homepage GET / returns 200. IMPORTANT: always restart mongodb at the end."
+  - agent: "testing"
+    message: "✅ DB OUTAGE RESILIENCE BUG FIX VERIFIED - ALL TESTS PASSED (3/3). The CRITICAL fix is working perfectly: admin login is now completely DB-independent and works even when MongoDB is down. Comprehensive testing completed: (1) Normal login works with correct/wrong password, (2) CRITICAL: During MongoDB outage, login with correct password returns 200 {success:true, token} and wrong password returns 401 - this proves the fix works!, (3) Post-outage regression: all endpoints (menu, content, gallery, reviews) return correct data, menu CRUD works with token, protected routes require auth, homepage returns 200 with real content. The refactor successfully moved /admin/login handling BEFORE DB connection in route.js (lines 50-57 before connectToMongo on line 59). This solves the production issue where DB unreachability caused login to show 'wrong password' errors. MongoDB service confirmed running after tests. No critical issues found."

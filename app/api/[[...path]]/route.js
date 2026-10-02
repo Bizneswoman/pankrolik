@@ -47,20 +47,20 @@ async function handleRoute(request, { params }) {
   const method = request.method
 
   try {
-    const db = await connectToMongo()
-    await ensureSeed(db)
-
-    if ((route === '/' || route === '/root') && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: 'Pan Kr\u00f3lik API' }))
-    }
-
-    // ---- Admin login ----
+    // ---- Admin login (works even if the database is unreachable) ----
     if (route === '/admin/login' && method === 'POST') {
       const body = await request.json()
       if (body.password === ADMIN_PASSWORD) {
         return handleCORS(NextResponse.json({ success: true, token: ADMIN_PASSWORD }))
       }
-      return handleCORS(NextResponse.json({ success: false, error: 'Nieprawid\u0142owe has\u0142o' }, { status: 401 }))
+      return handleCORS(NextResponse.json({ success: false, error: 'Nieprawidłowe hasło' }, { status: 401 }))
+    }
+
+    const db = await connectToMongo()
+    await ensureSeed(db)
+
+    if ((route === '/' || route === '/root') && method === 'GET') {
+      return handleCORS(NextResponse.json({ message: 'Pan Królik API' }))
     }
 
     // ---- Content ----

@@ -59,12 +59,23 @@ export default function Admin() {
   const login = async (e) => {
     e.preventDefault()
     setLoginErr('')
-    const res = await api('/admin/login', 'POST', '', { password })
-    if (res.success) {
-      localStorage.setItem('pk_admin', res.token)
-      setToken(res.token)
-    } else {
-      setLoginErr('Nieprawidłowe hasło')
+    try {
+      const r = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+      const res = await r.json().catch(() => ({}))
+      if (r.ok && res.success) {
+        localStorage.setItem('pk_admin', res.token)
+        setToken(res.token)
+      } else if (r.status === 401) {
+        setLoginErr('Nieprawidłowe hasło')
+      } else {
+        setLoginErr('Błąd serwera (' + r.status + ') – problem z połączeniem lub bazą danych. Spróbuj ponownie.')
+      }
+    } catch (err) {
+      setLoginErr('Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.')
     }
   }
 
