@@ -210,3 +210,31 @@ agent_communication:
     message: "Refactored seed logic into /app/lib/seed.js shared by API route and SSR data layer. Please test: (1) all API endpoints still work (GET/PUT /api/content, CRUD /api/menu, /api/gallery, /api/reviews, POST /api/admin/login with password pankrolik2025), (2) empty-DB recovery: drop the local DB (mongosh: db.getSiblingDB(process DB_NAME from /app/.env = your_database_name).dropDatabase()), then GET homepage (http://localhost:3000/) must return 200 with full content (not an error page) and collections must be re-seeded automatically, (3) same empty-DB recovery via API: drop DB then GET /api/menu must return 30 items. Do NOT test the Atlas script (external network blocked)."
   - agent: "testing"
     message: "✅ Backend testing complete - ALL TESTS PASSED (12/12). REGRESSION: All 10 API endpoints work correctly after refactor (GET endpoints, admin login, auth protection, all CRUD operations). CRITICAL BUG FIX VERIFIED: Empty-DB self-heal works perfectly via both SSR homepage and API routes. Dropped DB twice and verified: (1) Homepage returns 200 with real content (no crash/error page), (2) API endpoints return correct data (30 menu, 20 gallery, 3 reviews), (3) Collections auto re-seed correctly. The refactor to shared /app/lib/seed.js is successful - both route.js and lib/data.js correctly call ensureSeed(). No critical issues found. Backend is fully functional and the reported bug is fixed."
+
+frontend:
+  - task: "Admin panel: fix broken Polish characters (raw \\uXXXX escapes in JSX) + verify full panel functionality"
+    implemented: true
+    working: true
+    file: "/app/app/admin/page.js, /app/app/site-client.js, /app/lib/seed.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User reported 'panel admina nie działa'. Found: JSX text nodes and attributes contained literal \\uXXXX escape sequences (e.g. 'Has\\u0142o' instead of 'Hasło') which render verbatim in JSX. Decoded all 314 escapes to real UTF-8 chars across admin/page.js (55), site-client.js (41), lib/seed.js (218). Login API verified working via curl (POST /api/admin/login with pankrolik2025 returns success). Needs UI verification: login flow, all 4 tabs render with correct Polish text, CRUD operations work."
+      - working: true
+        agent: "testing"
+        comment: "✅ ALL TESTS PASSED - Unicode escape bug completely fixed. Comprehensive testing completed: (1) Login page displays correct Polish text ('Panel administratora', 'Zaloguj się, aby zarządzać treścią') with NO literal \\uXXXX sequences anywhere. (2) Wrong password shows error 'Nieprawidłowe hasło'. (3) Correct password 'pankrolik2025' logs in successfully. (4) Dashboard shows all 4 tabs with correct Polish text: 'Treść strony', 'Menu', 'Galeria', 'Opinie' - verified NO unicode escapes in any tab. (5) CRUD operations verified: Content edit saves with success toast 'Zapisano treść strony', Menu add/delete works (tested add→delete cycle), Reviews add/delete works (tested add→delete cycle). (6) Logout returns to login screen. (7) Public homepage displays correct Polish text with no unicode escapes, PL/EN language toggle works correctly ('Strona główna' switches to 'Home'). All 314 unicode escapes successfully decoded to proper UTF-8 Polish characters (ł, ą, ę, ć, ń, ó, ś, ź, ż). Admin panel is fully functional."
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Fixed mojibake (raw unicode escapes) in admin panel UI. Please run frontend UI test on http://localhost:3000/admin: (1) login page shows proper Polish ('Hasło', 'Zaloguj się'), (2) login with password pankrolik2025 succeeds and dashboard appears, (3) all 4 tabs (Treść strony, Menu, Galeria, Opinie) open and show correct Polish diacritics (no literal \\u sequences anywhere), (4) basic CRUD smoke: edit a content field and save (toast appears), add+delete a menu item, add+delete a review. (5) Also verify homepage http://localhost:3000/ still renders correctly (PL and EN toggle). Credentials in /app/memory/test_credentials.md."
+  - agent: "testing"
+    message: "✅ UNICODE BUG FIX VERIFIED - ALL TESTS PASSED. Tested admin panel at http://localhost:3000/admin with comprehensive test suite covering all requested scenarios. CRITICAL FIX CONFIRMED: Zero literal \\uXXXX unicode escape sequences found anywhere in the UI (tested login page, all 4 dashboard tabs, and public homepage). All Polish diacritics render correctly (ł, ą, ę, ć, ń, ó, ś, ź, ż). FUNCTIONALITY VERIFIED: Login/logout works, wrong password shows error, all 4 tabs render correctly, content edit saves with toast, menu add/delete works, review add/delete works, homepage PL/EN toggle works. The fix successfully decoded all 314 unicode escapes to proper UTF-8 characters. Admin panel is fully functional and ready for production. No critical issues found."

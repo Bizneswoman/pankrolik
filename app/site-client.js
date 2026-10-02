@@ -13,19 +13,19 @@ const LOGO = 'https://customer-assets.emergentagent.com/job_elegant-rabbit/artif
 const ICONS = { Leaf, MapPin, Sparkles, ConciergeBell }
 
 const NAV_LINKS = [
-  { id: 'home', label: 'Strona g\u0142\u00f3wna' },
+  { id: 'home', label: 'Strona główna' },
   { id: 'o-nas', label: 'O nas' },
   { id: 'menu', label: 'Menu' },
   { id: 'galeria', label: 'Galeria' },
   { id: 'kontakt', label: 'Kontakt' },
 ]
 
-const CATEGORY_ORDER = ['Przystawki', 'Zupy', 'Dania g\u0142\u00f3wne', 'Pizza', 'Burgery', 'Makarony', 'Desery', 'Napoje']
+const CATEGORY_ORDER = ['Przystawki', 'Zupy', 'Dania główne', 'Pizza', 'Burgery', 'Makarony', 'Desery', 'Napoje']
 
 const CAT_EN = {
   'Przystawki': 'Appetizers',
   'Zupy': 'Soups',
-  'Dania g\u0142\u00f3wne': 'Main courses',
+  'Dania główne': 'Main courses',
   'Pizza': 'Pizza',
   'Burgery': 'Burgers',
   'Makarony': 'Pasta',
@@ -35,22 +35,22 @@ const CAT_EN = {
 
 const T = {
   pl: {
-    nav: ['Strona g\u0142\u00f3wna', 'O nas', 'Menu', 'Galeria', 'Kontakt'],
+    nav: ['Strona główna', 'O nas', 'Menu', 'Galeria', 'Kontakt'],
     reserve: 'Zarezerwuj stolik',
     heroOverline: 'Restauracja Premium',
     viewMenu: 'Zobacz menu',
     aboutOverline: 'Nasza historia',
     menuOverline: 'Kulinarna sztuka', menuTitle: 'Nasze Menu',
-    galleryOverline: 'Galeria', galleryTitle: 'Nasze wn\u0119trze i dania', view: 'Zobacz',
-    reviewsOverline: 'Referencje', reviewsTitle: 'Opinie naszych go\u015bci', moreReviews: 'Zobacz wi\u0119cej opinii Google',
-    findUsOverline: 'Znajd\u017a nas', locationTitle: 'Lokalizacja',
+    galleryOverline: 'Galeria', galleryTitle: 'Nasze wnętrze i dania', view: 'Zobacz',
+    reviewsOverline: 'Referencje', reviewsTitle: 'Opinie naszych gości', moreReviews: 'Zobacz więcej opinii Google',
+    findUsOverline: 'Znajdź nas', locationTitle: 'Lokalizacja',
     address: 'Adres', phone: 'Telefon', email: 'E-mail', hours: 'Godziny otwarcia',
     navigate: 'Nawiguj w Google Maps',
     reservationOverline: 'Rezerwacja', reservationTitle: 'Zarezerwuj stolik',
-    reservationText: 'Chcesz zarezerwowa\u0107 stolik lub masz pytania? Skontaktuj si\u0119 z nami telefonicznie lub mailowo \u2013 z przyjemno\u015bci\u0105 pomo\u017cemy zaplanowa\u0107 Twoj\u0105 wizyt\u0119 w Pan Kr\u00f3lik.',
-    call: 'Zadzwo\u0144', writeUs: 'Napisz do nas', findUs: 'Znajd\u017a nas',
-    footerNav: 'Nawigacja', footerContact: 'Kontakt', rights: 'Wszelkie prawa zastrze\u017cone.',
-    mCall: 'Zadzwo\u0144', mNav: 'Nawiguj', mBook: 'Rezerwuj',
+    reservationText: 'Chcesz zarezerwować stolik lub masz pytania? Skontaktuj się z nami telefonicznie lub mailowo – z przyjemnością pomożemy zaplanować Twoją wizytę w Pan Królik.',
+    call: 'Zadzwoń', writeUs: 'Napisz do nas', findUs: 'Znajdź nas',
+    footerNav: 'Nawigacja', footerContact: 'Kontakt', rights: 'Wszelkie prawa zastrzeżone.',
+    mCall: 'Zadzwoń', mNav: 'Nawiguj', mBook: 'Rezerwuj',
   },
   en: {
     nav: ['Home', 'About', 'Menu', 'Gallery', 'Contact'],
@@ -65,7 +65,7 @@ const T = {
     address: 'Address', phone: 'Phone', email: 'E-mail', hours: 'Opening hours',
     navigate: 'Navigate with Google Maps',
     reservationOverline: 'Reservation', reservationTitle: 'Book a table',
-    reservationText: 'Would you like to book a table or have questions? Contact us by phone or email \u2013 we will be happy to help you plan your visit to Pan Kr\u00f3lik.',
+    reservationText: 'Would you like to book a table or have questions? Contact us by phone or email – we will be happy to help you plan your visit to Pan Królik.',
     call: 'Call', writeUs: 'Write to us', findUs: 'Find us',
     footerNav: 'Navigation', footerContact: 'Contact', rights: 'All rights reserved.',
     mCall: 'Call', mNav: 'Navigate', mBook: 'Book',
@@ -181,7 +181,7 @@ export default function SiteClient({ initial }) {
   if (!content) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-forest-dark">
-        <img src={LOGO} alt="Pan Kr\u00f3lik" className="w-32 h-32 object-contain animate-pulse" />
+        <img src={LOGO} alt="Pan Królik" className="w-32 h-32 object-contain animate-pulse" />
       </div>
     )
   }
@@ -196,7 +196,7 @@ export default function SiteClient({ initial }) {
       >
         <div className="container flex items-center justify-between">
           <button onClick={() => scrollTo('home')} className="flex items-center gap-3 cursor-pointer">
-            <img src={LOGO} alt="Pan Kr\u00f3lik logo" className={`object-contain transition-all duration-500 ${scrolled ? 'h-12' : 'h-16'}`} />
+            <img src={LOGO} alt="Pan Królik logo" className={`object-contain transition-all duration-500 ${scrolled ? 'h-12' : 'h-16'}`} />
           </button>
 
           <nav className="hidden lg:flex items-center gap-9">
@@ -241,7 +241,7 @@ export default function SiteClient({ initial }) {
             className="fixed inset-0 z-[60] bg-forest-dark/98 backdrop-blur-lg lg:hidden"
           >
             <div className="flex justify-between items-center container py-5">
-              <img src={LOGO} alt="Pan Kr\u00f3lik" className="h-14 object-contain" />
+              <img src={LOGO} alt="Pan Królik" className="h-14 object-contain" />
               <button onClick={() => setMobileOpen(false)} className="text-gold"><X size={30} /></button>
             </div>
             <nav className="flex flex-col items-center justify-center gap-8 mt-16">
@@ -265,7 +265,7 @@ export default function SiteClient({ initial }) {
       {/* ---------- HERO ---------- */}
       <section id="home" className="relative min-h-screen flex items-center">
         <div className="absolute inset-0">
-          <img src={content.hero.backgroundImage} alt="Wn\u0119trze restauracji Pan Kr\u00f3lik" className="w-full h-full object-cover" />
+          <img src={content.hero.backgroundImage} alt="Wnętrze restauracji Pan Królik" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-forest-dark/95 via-forest-dark/80 to-forest-dark/60" />
           <div className="absolute inset-0 bg-forest-dark/40" />
         </div>
@@ -277,7 +277,7 @@ export default function SiteClient({ initial }) {
               transition={{ duration: 1, ease: 'easeOut' }}
               className="flex justify-center lg:justify-start"
             >
-              <img src={LOGO} alt="Pan Kr\u00f3lik" className="w-64 md:w-80 lg:w-[26rem] object-contain drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]" />
+              <img src={LOGO} alt="Pan Królik" className="w-64 md:w-80 lg:w-[26rem] object-contain drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]" />
             </motion.div>
 
             <div className="text-center lg:text-left">
@@ -321,7 +321,7 @@ export default function SiteClient({ initial }) {
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <FadeIn className="relative" y={40}>
               <div className="relative">
-                <img src={content.about.image} alt="Restauracja Pan Kr\u00f3lik" className="w-full h-[500px] object-cover rounded-2xl shadow-2xl" />
+                <img src={content.about.image} alt="Restauracja Pan Królik" className="w-full h-[500px] object-cover rounded-2xl shadow-2xl" />
                 <div className="absolute -inset-3 border border-gold/30 rounded-2xl -z-0 translate-x-4 translate-y-4" />
               </div>
             </FadeIn>
@@ -428,7 +428,7 @@ export default function SiteClient({ initial }) {
                 >
                   <img
                     src={g.url}
-                    alt={`Galeria Pan Kr\u00f3lik ${i + 1}`}
+                    alt={`Galeria Pan Królik ${i + 1}`}
                     loading="lazy"
                     className="w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -465,7 +465,7 @@ export default function SiteClient({ initial }) {
               key={lightbox}
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               src={gallery[lightbox].url}
-              alt="Powi\u0119kszone zdj\u0119cie"
+              alt="Powiększone zdjęcie"
               className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
@@ -517,7 +517,7 @@ export default function SiteClient({ initial }) {
             <FadeIn className="order-2 lg:order-1" y={40}>
               <div className="h-full min-h-[380px] rounded-2xl overflow-hidden border border-gold/20 shadow-xl">
                 <iframe
-                  title="Mapa Pan Kr\u00f3lik"
+                  title="Mapa Pan Królik"
                   src={content.contact.mapsEmbed}
                   className="w-full h-full min-h-[380px]"
                   style={{ border: 0 }}
@@ -622,7 +622,7 @@ export default function SiteClient({ initial }) {
         <div className="container">
           <div className="grid md:grid-cols-3 gap-10 items-start">
             <div>
-              <img src={LOGO} alt="Pan Kr\u00f3lik" className="h-24 object-contain mb-4" />
+              <img src={LOGO} alt="Pan Królik" className="h-24 object-contain mb-4" />
               <p className="text-cream/60 text-sm leading-relaxed font-light max-w-xs">{pick(content.footer, 'description')}</p>
             </div>
             <div className="md:text-center">
@@ -651,7 +651,7 @@ export default function SiteClient({ initial }) {
           </div>
           <div className="border-t border-gold/10 mt-12 pt-6 text-center">
             <p className="text-cream/40 text-xs tracking-wide">
-              &copy; {new Date().getFullYear()} Restauracja Pan Kr\u00f3lik. {t.rights}
+              &copy; {new Date().getFullYear()} Restauracja Pan Królik. {t.rights}
             </p>
           </div>
         </div>
