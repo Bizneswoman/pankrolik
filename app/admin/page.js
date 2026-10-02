@@ -25,6 +25,35 @@ const toBase64 = (file) => new Promise((res, rej) => {
   reader.readAsDataURL(file)
 })
 
+// Guarantees every nested field exists so the editor never crashes,
+// even if the database document is from an older schema.
+const safeContent = (c) => {
+  c = c && typeof c === 'object' ? c : {}
+  return {
+    id: 'site',
+    hero: { title: '', title_en: '', subtitle: '', subtitle_en: '', backgroundImage: '', ...(c.hero || {}) },
+    about: {
+      title: '', title_en: '', text: '', text_en: '', image: '',
+      ...(c.about || {}),
+      features: Array.isArray(c.about?.features) && c.about.features.length
+        ? c.about.features
+        : [
+            { title: '', title_en: '' },
+            { title: '', title_en: '' },
+            { title: '', title_en: '' },
+            { title: '', title_en: '' },
+          ],
+    },
+    contact: {
+      address: '', phone: '', email: '', mapsEmbed: '', mapsLink: '',
+      ...(c.contact || {}),
+      hours: Array.isArray(c.contact?.hours) ? c.contact.hours : [],
+    },
+    social: { instagram: '', facebook: '', tiktok: '', ...(c.social || {}) },
+    footer: { description: '', description_en: '', ...(c.footer || {}) },
+  }
+}
+
 export default function Admin() {
   const [token, setToken] = useState('')
   const [password, setPassword] = useState('')
@@ -50,7 +79,9 @@ export default function Admin() {
       api('/gallery', 'GET', token),
       api('/reviews', 'GET', token),
     ]).then(([c, m, g, r]) => {
-      setContent(c); setMenu(m || []); setGallery(g || []); setReviews(r || [])
+      setContent(safeContent(c)); setMenu(m || []); setGallery(g || []); setReviews(r || [])
+    }).catch(() => {
+      setContent(safeContent(null)); setMenu([]); setGallery([]); setReviews([])
     })
   }, [token])
 
